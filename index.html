@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="data:,">
+  <style>
+    body {
+      font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto,
+        "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", Helvetica, Arial,
+        sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+      color: hsl(0deg 0% 15%);
+      background: hsl(0deg 0% 90%);
+    }
+
+    header {
+      display: flex;
+      justify-content: center;
+    }
+
+    main {
+      inline-size: min(720px, 100% - 32px);
+      margin-inline: auto;
+    }
+
+    form {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    input,
+    output {
+      inline-size: 100%;
+      margin-block-end: 1rem;
+    }
+
+    .inline-spinner {
+      display: none;
+      box-sizing: border-box;
+      block-size: 1em;
+      inline-size: 1em;
+      margin-inline-start: .5em;
+      border: 0.25em solid transparent;
+      border-block-start: 0.25em solid black;
+      border-radius: 50%;
+      animation: spin 1s infinite;
+    }
+
+    @keyframes spin {
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    #status {
+      margin-block-start: 1rem;
+      font-weight: bold;
+    }
+  </style>
+  <title>redbean-shorturl</title>
+</head>
+
+<body>
+  <header>
+    <h1>redbean-shorturl</h1>
+  </header>
+
+  <main>
+    <form>
+      <label for="long">Enter a long URL to shorten:</label>
+      <input type="url" id="long" name="long" placeholder="https://example.com" required></input>
+
+      <label for="short">Enter a short alias:</label>
+      <input type="text" id="short" name="short" placeholder="example" required maxlength="80" pattern="^(\w|-|_)+$" title="Valid characters are alphanumeric, hyphen (-), and underscore (_)."></input>
+
+      <label for="preview">Short URL preview:</label>
+      <output id="preview" name="preview"></output>
+
+      <button>Make short URL!</button><span class="inline-spinner"></span>
+
+      <output id="status" name="status"></output>
+    </form>
+  </main>
+
+  <script>
+    const form = document.querySelector('form');
+    const spinner = document.querySelector('.inline-spinner');
+
+    form.elements.namedItem('short').addEventListener('input', e => {
+      form.elements.namedItem('preview').innerHTML = `<a href="${location.origin}/${e.target.value}">${location.origin}/${e.target.value}</a>`;
+    });
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      e.submitter.disabled = true;
+      spinner.style.setProperty('display', 'inline-block');
+
+      const response = await fetch('/api.lua', {
+        method: 'POST',
+        body: new URLSearchParams(new FormData(form))
+      });
+
+      if (response.ok) {
+        form.elements.namedItem('status').textContent = `Success: ${location.origin}/${form.elements.namedItem('short').value} created!`;
+      }
+      else {
+        form.elements.namedItem('status').textContent = `Failure: ${await response.text()}`;
+      }
+
+      e.submitter.disabled = false;
+      spinner.style.setProperty('display', 'none');
+    });
+  </script>
+</body>
+
+</html>

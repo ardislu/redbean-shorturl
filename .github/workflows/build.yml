@@ -1,0 +1,29 @@
+name: redbean-shorturl CI
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - build.sh
+      - index.html
+      - api.lua
+      - .init.lua
+
+jobs:
+  make-search-filter:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Fetch redbean.com and add files
+        run: |
+          chmod +x ./build.sh
+          sudo ./build.sh
+
+      - name: Upload redbean.com artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: redbean.com
+          path: ./redbean.com
