@@ -28,5 +28,3 @@ function OnHttpRequest()
     end
   end
 end
-
--- Test
