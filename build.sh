@@ -1,6 +1,9 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 
-files='index.html api.lua .init.lua'
+source ./.env
+if [[ "$1" == '--dev' ]]; then
+  source ./.env.dev
+fi
 
 curl https://redbean.dev/redbean-latest.com >redbean.com
-zip redbean.com $files
+zip redbean.com $FILES
