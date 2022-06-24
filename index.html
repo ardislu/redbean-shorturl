@@ -88,8 +88,10 @@
     const form = document.querySelector('form');
     const spinner = document.querySelector('.inline-spinner');
 
+    const preview = document.querySelector('#preview');
+    preview.innerHTML = `<a href="${location.origin}/">${location.origin}/</a>`; // Set an initial value to reduce layout shift
     form.elements.namedItem('short').addEventListener('input', e => {
-      form.elements.namedItem('preview').innerHTML = `<a href="${location.origin}/${e.target.value}">${location.origin}/${e.target.value}</a>`;
+      preview.innerHTML = `<a href="${location.origin}/${e.target.value}">${location.origin}/${e.target.value}</a>`;
     });
 
     form.addEventListener('submit', async e => {
